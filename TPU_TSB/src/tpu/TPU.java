@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tpu_tsb;
+package tpu;
 
 /**
  *
  * @author juamp
  */
-public class TPU_TSB {
+public class TPU {
 
     /**
      * @param args the command line arguments
