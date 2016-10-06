@@ -5,16 +5,13 @@
  */
 package tpu;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,29 +25,9 @@ public class GestorProcesamiento {
 
     public GestorProcesamiento(String origen) {
         this.origen = origen;
-        hash= new HashMap(); // Estimando cantidad de palabras a ingresar
+        hash= new HashMap();
     }
-    
-    public int countLines() throws IOException { // Estiamndo....
-        InputStream is = new BufferedInputStream(new FileInputStream(origen));
-        try {
-            byte[] c = new byte[1024];
-            int count = 0;
-            int readChars = 0;
-            boolean empty = true;
-            while ((readChars = is.read(c)) != -1) {
-                empty = false;
-                for (int i = 0; i < readChars; ++i) {
-                    if (c[i] == '\n') {
-                        ++count;
-                    }
-                }
-            }
-            return (count == 0 && !empty) ? 1 : count;
-        } finally {
-            is.close();
-        }
-    }
+   
     
     public void procesar(){
         contarPalabras();
