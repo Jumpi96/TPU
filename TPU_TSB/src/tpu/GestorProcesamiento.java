@@ -29,15 +29,6 @@ public class GestorProcesamiento {
     public GestorProcesamiento(String origen) {
         this.origen = origen;
         hash= new HashMap(); // Estimando cantidad de palabras a ingresar
-        
-        /*
-        try { //Estimando....
-            System.out.println(countLines());
-        } catch (IOException ex) {
-            Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
-        }
-*/
-        
     }
     
     public int countLines() throws IOException { // Estiamndo....
@@ -80,10 +71,11 @@ public class GestorProcesamiento {
                     st=new StringSimbolizador(linea);
                     while(st.hasMoreTokens()){
                         cont=st.nextToken();
-                        if(hash.containsKey(cont)) 
-                            hash.put(cont,hash.get(cont)+1);
-                        else
-                            hash.put(cont,1);
+                        if(cont!=null)
+                            if(hash.containsKey(cont)) 
+                                hash.put(cont,hash.get(cont)+1);
+                            else
+                                hash.put(cont,1);
                     }
                 }   
                 linea=br.readLine();

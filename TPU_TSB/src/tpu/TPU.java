@@ -5,6 +5,7 @@
  */
 package tpu;
 
+import java.io.IOException;
 import java.util.StringTokenizer;
 
 /**
@@ -16,18 +17,22 @@ public class TPU {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // TODO code application logic here
         
         //Estimando...
         GestorProcesamiento g = new GestorProcesamiento("16082-8.txt");
         g.procesar();
-        /*g=new GestorProcesamiento("22975-8.txt");
+        /*System.out.println(g.countLines());
+        g=new GestorProcesamiento("22975-8.txt");
         g.procesar();
+        System.out.println(g.countLines());
         g=new GestorProcesamiento("41575-8.txt");
         g.procesar();
+        System.out.println(g.countLines());
         g=new GestorProcesamiento("18166-8.txt");
-        g.procesar();*/
+        g.procesar();
+        System.out.println(g.countLines());*/
     }
     
 }
