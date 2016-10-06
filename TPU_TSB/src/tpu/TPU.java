@@ -5,6 +5,8 @@
  */
 package tpu;
 
+import java.util.StringTokenizer;
+
 /**
  *
  * @author juamp
@@ -16,6 +18,9 @@ public class TPU {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
+        GestorProcesamiento g = new GestorProcesamiento("16082-8.txt");
+        g.procesar();
     }
     
 }
