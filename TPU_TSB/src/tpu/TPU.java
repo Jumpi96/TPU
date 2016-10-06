@@ -19,8 +19,15 @@ public class TPU {
     public static void main(String[] args) {
         // TODO code application logic here
         
+        //Estimando...
         GestorProcesamiento g = new GestorProcesamiento("16082-8.txt");
         g.procesar();
+        /*g=new GestorProcesamiento("22975-8.txt");
+        g.procesar();
+        g=new GestorProcesamiento("41575-8.txt");
+        g.procesar();
+        g=new GestorProcesamiento("18166-8.txt");
+        g.procesar();*/
     }
     
 }

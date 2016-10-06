@@ -5,15 +5,15 @@
  */
 package tpu;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +28,37 @@ public class GestorProcesamiento {
 
     public GestorProcesamiento(String origen) {
         this.origen = origen;
-        hash= new HashMap(); // ¿Como estimamos largo del hash para evitar exceso de memoria?
+        hash= new HashMap(); // Estimando cantidad de palabras a ingresar
+        
+        /*
+        try { //Estimando....
+            System.out.println(countLines());
+        } catch (IOException ex) {
+            Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
+        }
+*/
+        
+    }
+    
+    public int countLines() throws IOException { // Estiamndo....
+        InputStream is = new BufferedInputStream(new FileInputStream(origen));
+        try {
+            byte[] c = new byte[1024];
+            int count = 0;
+            int readChars = 0;
+            boolean empty = true;
+            while ((readChars = is.read(c)) != -1) {
+                empty = false;
+                for (int i = 0; i < readChars; ++i) {
+                    if (c[i] == '\n') {
+                        ++count;
+                    }
+                }
+            }
+            return (count == 0 && !empty) ? 1 : count;
+        } finally {
+            is.close();
+        }
     }
     
     public void procesar(){
@@ -38,17 +68,16 @@ public class GestorProcesamiento {
     
     private void contarPalabras(){
         BufferedReader br;
-        String delimitadores = " /,.;?¿¡!\"'";
-        StringTokenizer st;
+        StringSimbolizador st;
         String linea,cont;
+        Charset inputCharset = Charset.forName("ISO-8859-1");
 
-        
         try {
-            br= new BufferedReader(new FileReader(origen));
-            linea = br.readLine();
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(origen), inputCharset));
+            linea=br.readLine();
             while(true){
                 if(linea.equals("")==false){
-                    st=new StringTokenizer(linea,delimitadores);
+                    st=new StringSimbolizador(linea);
                     while(st.hasMoreTokens()){
                         cont=st.nextToken();
                         if(hash.containsKey(cont)) 
@@ -62,7 +91,7 @@ public class GestorProcesamiento {
         } catch (NullPointerException ex) {} catch (IOException ex) {
             Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Working");
-        hash.keySet();
+        Set set = hash.keySet();
+        System.out.println(set.size());
     }
 }
