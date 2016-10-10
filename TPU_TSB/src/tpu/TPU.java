@@ -28,8 +28,8 @@ public class TPU {
             Logger.getLogger(TPU.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        GestorProcesamiento g = new GestorProcesamiento("16082-8.txt");
-        g.procesar();
+        GestorProcesamiento g = new GestorProcesamiento();
+        g.procesar("16082-8.txt");
     }
     
     private static void baseDatos() throws SQLException{
