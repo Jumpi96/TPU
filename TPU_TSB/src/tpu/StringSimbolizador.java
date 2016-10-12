@@ -16,7 +16,7 @@ public class StringSimbolizador {
     private int newPosition;
     private int maxPosition;
     private String str;
-    private final String delimiters=" /,.;?¿¡!\"*(){}_[]";
+    private final String delimiters=" /,.;?¿¡!\"*(){}_[]«:»";
     private final String noIntermedios="0123456789"; 
     private int contadorGuiones;
     private boolean noEsPalabra;

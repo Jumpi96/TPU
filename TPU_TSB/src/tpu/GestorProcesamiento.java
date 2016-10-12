@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -47,14 +48,18 @@ public class GestorProcesamiento {
             Statement st = conn.createStatement();
             String consulta;
             String palabra;
-            consulta="INSERT INTO Palabras (contenido,archivo,repeticiones) VALUES \n";
-            for (int i = 0; i < 499; i++) { // HACERLO CADA 500 crear otro LOOP
+            int contador=0;
+            while(contador*500<s.size()){ // Falla al pasar los 2000 --> Usar PreparedStatement
+                consulta="INSERT INTO Palabras (contenido,repeticiones,origen) VALUES \n   ";
+                for (int i = 0; i < 499; i++) {
+                    palabra=(String)it.next();
+                    consulta+="('"+palabra+"',"+hash.get(palabra)+",'"+origen+"'),";
+                }
                 palabra=(String)it.next();
-                consulta+="('"+palabra+"',"+hash.get(palabra)+",'"+origen+"'),";
+                consulta+="('"+palabra+"',"+hash.get(palabra)+",'"+origen+"');";
+                st.execute(consulta);
+                contador++;
             }
-            palabra=(String)it.next();
-            consulta+="('"+palabra+"',"+hash.get(palabra)+",'"+origen+"');";
-            st.execute(consulta);
             st.close();
             conn.close();
         } catch (SQLException ex) {
@@ -63,7 +68,7 @@ public class GestorProcesamiento {
         
     }
     
-    private void actualizarHash(HashMap <String,Integer> hash){ // Eficiencia de manejar dos loops a la vez????
+    private void actualizarHash(HashMap <String,Integer> hash){ // Eficiencia de manejar dos loops a la vez???? --> mover a grabarBD()
         Set<String> s=hash.keySet();
         Iterator it = s.iterator();
         int[] temp;
@@ -79,7 +84,25 @@ public class GestorProcesamiento {
         }   
     }
     private HashMap<String,int[]> leerBD(){
-        // Completar
+        HashMap<String,int[]> hash = new HashMap();
+        Connection conn;
+        try {
+            conn = DriverManager.getConnection("jdbc:sqlite:D:\\Facultad\\TSB\\TPU\\Repositorio\\TPU\\TPU_TSB\\vocabulario");
+            Statement st = conn.createStatement();
+            String consulta="SELECT contenido,SUM(repeticiones),COUNT(origen)";
+            consulta+="FROM palabras GROUP BY contenido";
+            ResultSet rs=st.executeQuery(consulta);
+            
+            while (rs.next()) {
+                hash.put(rs.getString(1), new int[]{rs.getInt(2),rs.getInt(3)});
+            }
+            rs.close();
+            st.close();
+            conn.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return new HashMap();
     }
     
