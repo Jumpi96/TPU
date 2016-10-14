@@ -35,24 +35,43 @@ public class GestorProcesamiento {
     
     public void procesar(String origen){
         HashMap <String,Integer> nuevoHash=contarPalabras(origen);
-        grabarBD(origen,nuevoHash);
+        actualizarVocabulario(origen,nuevoHash);
     }
 
-    private void grabarBD(String origen,HashMap<String,Integer> hash){
-        actualizarHash(hash);
+    /*
+    Graba apariciones en el archivo procesado en la BD y actualiza el Heap
+    que contiene el vocabulario en memoria.
+    Hace ambas cosas en la misma iteración para evitar duplicar el tiempo de
+    ejecución. Realiza INSERT múltiples de hasta 500 filas por límite de SQLite.
+    */
+    private void actualizarVocabulario(String origen,HashMap<String,Integer> hash){
+        //actualizarHash(hash);
         
         Set<String> s=hash.keySet();
         Iterator it = s.iterator();
         try {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:D:\\Facultad\\TSB\\TPU\\Repositorio\\TPU\\TPU_TSB\\vocabulario");
-            Statement st = conn.createStatement();
+            Statement st=conn.createStatement();
             String consulta;
             String palabra;
+            int[] temp;
             int contador=0;
-            while(contador*500<s.size()){ // Falla al pasar los 2000 --> Usar PreparedStatement
+            int tope;
+            while(contador*500<s.size()){ 
                 consulta="INSERT INTO Palabras (contenido,repeticiones,origen) VALUES \n   ";
-                for (int i = 0; i < 499; i++) {
+                if ((contador+1)*500<s.size())
+                    tope=500;
+                else
+                    tope=s.size()-contador*500;
+                
+                for (int i = 0; i < tope-1; i++) {
                     palabra=(String)it.next();
+                    if (!hashCompleto.containsKey(palabra))
+                        hashCompleto.put(palabra,new int[] {hash.get(palabra),1});
+                    else{
+                        temp=hashCompleto.get(palabra);
+                        hashCompleto.put(palabra,new int[]{temp[0]+hash.get(palabra),temp[1]+1});
+                    }
                     consulta+="('"+palabra+"',"+hash.get(palabra)+",'"+origen+"'),";
                 }
                 palabra=(String)it.next();
@@ -68,21 +87,6 @@ public class GestorProcesamiento {
         
     }
     
-    private void actualizarHash(HashMap <String,Integer> hash){ // Eficiencia de manejar dos loops a la vez???? --> mover a grabarBD()
-        Set<String> s=hash.keySet();
-        Iterator it = s.iterator();
-        int[] temp;
-        String actual;
-        for (int i = 0; i < s.size(); i++) {
-            actual=(String)it.next();
-            if (!hashCompleto.containsKey(actual))
-                hashCompleto.put(actual,new int[] {hash.get(actual),1});
-            else{
-                temp=hashCompleto.get(actual);
-                hashCompleto.put(actual,new int[]{temp[0]+hash.get(actual),temp[1]+1});
-            } 
-        }   
-    }
     private HashMap<String,int[]> leerBD(){
         HashMap<String,int[]> hash = new HashMap();
         Connection conn;
