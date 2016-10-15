@@ -32,7 +32,7 @@ public class TPU {
     }
     
     private static void baseDatos() throws SQLException{
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:D:\\Facultad\\TSB\\TPU\\Repositorio\\TPU\\TPU_TSB\\vocabulario");
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:vocabulario");
         //seguir
     }
 }

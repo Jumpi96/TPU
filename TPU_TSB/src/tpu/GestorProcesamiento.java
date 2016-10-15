@@ -56,7 +56,7 @@ public class GestorProcesamiento {
         Set<String> s=hash.keySet();
         Iterator it = s.iterator();
         try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:D:\\Facultad\\TSB\\TPU\\Repositorio\\TPU\\TPU_TSB\\vocabulario");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:vocabulario");
             Statement st=conn.createStatement();
             String consulta;
             String palabra;
@@ -97,7 +97,7 @@ public class GestorProcesamiento {
         HashMap<String,int[]> hash = new HashMap();
         Connection conn;
         try {
-            conn = DriverManager.getConnection("jdbc:sqlite:D:\\Facultad\\TSB\\TPU\\Repositorio\\TPU\\TPU_TSB\\vocabulario");
+            conn = DriverManager.getConnection("jdbc:sqlite:vocabulario");
             Statement st = conn.createStatement();
             String consulta="SELECT contenido,SUM(repeticiones),COUNT(origen)";
             consulta+="FROM palabras GROUP BY contenido";
@@ -150,7 +150,7 @@ public class GestorProcesamiento {
         Connection conn;
         boolean procesado=true;
         try {
-            conn = DriverManager.getConnection("jdbc:sqlite:D:\\Facultad\\TSB\\TPU\\Repositorio\\TPU\\TPU_TSB\\vocabulario");
+            conn = DriverManager.getConnection("jdbc:sqlite:vocabulario");
             Statement st = conn.createStatement();
             String consulta="SELECT COUNT(*)";
             consulta+="FROM palabras WHERE origen LIKE '"+origen+"'";
