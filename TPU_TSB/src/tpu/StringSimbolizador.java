@@ -1,7 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ Clase StringSimbolizador
+ Clase creada en base a StringTokenizer, clase de Java. A diferencia de esta,
+ no tiene en cuenta 'palabras' alfanuméricas y sí tiene en cuenta palabras
+ compuestas (con guión intermedio) que son válidas en el idioma castellano.
  */
 package tpu;
 
@@ -84,8 +85,8 @@ public class StringSimbolizador {
             throw new NoSuchElementException();
         int start = currentPosition;
         currentPosition = scanToken(currentPosition);
-        // Codigo agregado
-        if (!noEsPalabra && contadorGuiones<=1)
+        
+        if (!noEsPalabra && contadorGuiones<=1 && str.charAt(start)!='-')
             return str.substring(start, currentPosition);
         else
             if(hasMoreTokens())

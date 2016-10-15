@@ -1,7 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ GestorProcesamiento.
+  Clase encargada de procesar archivos nuevos, leer vocabulario existente,
+  grabar en la base de datos y actualizar el vocabulario
+  sin recurrir a ella.
  */
 package tpu;
 
@@ -12,6 +13,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,52 +49,57 @@ public class GestorProcesamiento {
     Graba apariciones en el archivo procesado en la BD y actualiza el Heap
     que contiene el vocabulario en memoria.
     Hace ambas cosas en la misma iteración para evitar duplicar el tiempo de
-    ejecución. Realiza INSERT múltiples de hasta 500 filas por límite de SQLite.
-    ------> PUEDE OPTIMIZARSE USANDO PREPARED STATEMENTS. VALE LA PENA?
+    ejecución. Realiza INSERT múltiples a través del procesamiento de lotes.
+    Utiliza PreparedStatements para mejorar funcionamiento y evitar errores.
+    Trabaja con transacciones dado optimización de SQLite en esos casos.
+    Trabaja con lotes de hasta 1000 palabras para evitar problemas de memoria.
     */
-    private void actualizarVocabulario(String origen,HashMap<String,Integer> hash){
-        //actualizarHash(hash);
-        
+    private void actualizarVocabulario(String origen,HashMap<String,Integer> hash){        
         Set<String> s=hash.keySet();
         Iterator it = s.iterator();
         try {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:vocabulario");
-            Statement st=conn.createStatement();
-            String consulta;
+            Statement trans=conn.createStatement();
+            String consulta="INSERT INTO palabras (contenido,repeticiones,origen) VALUES (?,?,'"+origen+"')";
+            PreparedStatement st=conn.prepareStatement(consulta);
             String palabra;
             int[] temp;
-            int contador=0;
             int tope;
-            while(contador*500<s.size()){ 
-                consulta="INSERT INTO Palabras (contenido,repeticiones,origen) VALUES \n   ";
-                if ((contador+1)*500<s.size())
-                    tope=500;
-                else
-                    tope=s.size()-contador*500;
+            trans.execute("BEGIN");
+            for(int contador=0;contador*1000<s.size();contador++){
                 
-                for (int i = 0; i < tope-1; i++) {
+                if ((contador+1)*1000<s.size())
+                    tope=1000;
+                else
+                    tope=s.size()-contador*1000;
+                
+                for (int i = 0; i < tope; i++) {
                     palabra=(String)it.next();
                     if (!hashCompleto.containsKey(palabra))
                         hashCompleto.put(palabra,new int[] {hash.get(palabra),1});
-                    else{
+                    else{   
                         temp=hashCompleto.get(palabra);
                         hashCompleto.put(palabra,new int[]{temp[0]+hash.get(palabra),temp[1]+1});
                     }
-                    consulta+="('"+palabra+"',"+hash.get(palabra)+",'"+origen+"'),";
+                    st.setString(1, palabra);
+                    st.setInt(2, hash.get(palabra));
+                    st.addBatch();
                 }
-                palabra=(String)it.next();
-                consulta+="('"+palabra+"',"+hash.get(palabra)+",'"+origen+"');";
-                st.execute(consulta);
-                contador++;
+                st.executeBatch();
             }
+            trans.execute("END");
+            trans.close();
             st.close();
             conn.close();
         } catch (SQLException ex) {
             Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
     
+    /*
+    Lee el vocabulario existente, devuelve el HashMap completo con palabras,
+    repeticiones y archivos distintos en los que apareció.
+    */
     private HashMap<String,int[]> leerBD(){
         HashMap<String,int[]> hash = new HashMap();
         Connection conn;
