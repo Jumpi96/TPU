@@ -33,9 +33,14 @@ public class GestorProcesamiento {
     }
    
     
-    public void procesar(String origen){
-        HashMap <String,Integer> nuevoHash=contarPalabras(origen);
-        actualizarVocabulario(origen,nuevoHash);
+    public boolean procesar(String origen){
+        if (!estaProcesado(origen)) {
+            HashMap <String,Integer> nuevoHash=contarPalabras(origen);
+            actualizarVocabulario(origen,nuevoHash);
+            return true;
+        }
+        else
+            return false;
     }
 
     /*
@@ -43,6 +48,7 @@ public class GestorProcesamiento {
     que contiene el vocabulario en memoria.
     Hace ambas cosas en la misma iteración para evitar duplicar el tiempo de
     ejecución. Realiza INSERT múltiples de hasta 500 filas por límite de SQLite.
+    ------> PUEDE OPTIMIZARSE USANDO PREPARED STATEMENTS. VALE LA PENA?
     */
     private void actualizarVocabulario(String origen,HashMap<String,Integer> hash){
         //actualizarHash(hash);
@@ -138,5 +144,28 @@ public class GestorProcesamiento {
             Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
         }
         return hash;
+    }
+
+    private boolean estaProcesado(String origen) {
+        Connection conn;
+        boolean procesado=true;
+        try {
+            conn = DriverManager.getConnection("jdbc:sqlite:D:\\Facultad\\TSB\\TPU\\Repositorio\\TPU\\TPU_TSB\\vocabulario");
+            Statement st = conn.createStatement();
+            String consulta="SELECT COUNT(*)";
+            consulta+="FROM palabras WHERE origen LIKE '"+origen+"'";
+            ResultSet rs=st.executeQuery(consulta);
+            if (rs.getInt(1)!=0)
+                procesado=true;
+            else
+                procesado=false;
+            
+            rs.close();
+            st.close();
+            conn.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return procesado;
     }
 }
