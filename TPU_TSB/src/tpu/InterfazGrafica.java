@@ -5,27 +5,21 @@
  */
 package tpu;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
-import javax.swing.JScrollPane;
-import javax.swing.*;
-
 public class InterfazGrafica extends javax.swing.JFrame {
-    private JList lista;
-    private DefaultListModel modeloLista=new DefaultListModel();
-    JScrollPane scrollpaneLista;
-    Connection conn = DriverManager.getConnection("jdbc:sqlite:vocabulario");
-    public InterfazGrafica() throws SQLException {
+    
+    private GestorProcesamiento g;
+    
+    //private JList lista; No termino de entender que son pero evita declarar
+    //atributos por aca en una interfaz. Solo dejaria el gestor yo
+    //private DefaultListModel modeloLista=new DefaultListModel();
+    //JScrollPane scrollpaneLista; No tenes que declarar algo que ya esta
+    //declarado en la interfaz
+    
+    
+    public InterfazGrafica() {
         initComponents();
-        scrollpaneLista = new JScrollPane();
-        lista = new JList();
-        llenarLista();
+        //scrollpaneLista = new JScrollPane();
+        //lista = new JList();
     }
 
     /**
@@ -50,18 +44,35 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Palabra", "Repeticiones", "Apariciones"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTable1.setColumnSelectionAllowed(true);
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
+        }
 
         jTextPane1.setText("Prograso de Carga");
         jScrollPane2.setViewportView(jTextPane1);
@@ -146,11 +157,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                try {
-                    new InterfazGrafica().setVisible(true);
-                } catch (SQLException ex) {
-                    Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                new InterfazGrafica().setVisible(true);
             }
                       
             
@@ -187,20 +194,44 @@ public class InterfazGrafica extends javax.swing.JFrame {
 //        }
 //    }
 
-    private void llenarLista() {     
-        try {
-        conn = DriverManager.getConnection("jdbc:sqlite:vocabulario");
-            Statement st = conn.createStatement();
-            String consulta="SELECT DISTINCT origen";
-            consulta+="FROM palabras ";
-            ResultSet rs=st.executeQuery(consulta);
-        while(rs.next())
-            modeloLista.addElement(rs.getString("origen"));//nombre es el campo de la base de datos
-            lista.setModel(modeloLista);
+    private void llenarGrilla() {     
+        // tenes que llamar a g.getHashCompleto()
+        
+        /*
+        La forma más facil de recorrer un Hash
+        1-Set<String> s=hash.keySet(); (crea un set con todas las palabras)
+        Iterator it = s.iterator();
+        2-palabra=it.next() (hasta que termine)
+        hash.get(palabra) (devuelve un arreglo de dos dimensiones que tiene
+            en [0] la cantidad de repeticiones y en [1] la cantidad de archivos
+            en los que aparecio)
+        */
+        
+        /*
+        Ya defini yo las columnas con el editor grafico. Solo queda:
+        Forma en que yo definia tamaños y cargaba una grilla en DSI:
+        
+            DefaultTableModel model= (DefaultTableModel) jTableTI.getModel();;
+            model.setRowCount(0);
+            jTableTI.getColumnModel().getColumn(0).setPreferredWidth(150);
+            jTableTI.getColumnModel().getColumn(1).setPreferredWidth(26);
+            jTableTI.getColumnModel().getColumn(2).setPreferredWidth(150);
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+            jTableTI.getColumnModel().getColumn(1).setCellRenderer( centerRenderer );
 
-        } catch (SQLException e) {
-        }
+
+            for (int i = 0; i < v.length; i++) {
+                model.addRow(new Object[]{v[i][0],v[i][1],v[i][2]});
+            }
+        */
      }
+
+    void habilitarPantalla(GestorProcesamiento g) {
+        this.g=g;
+        llenarGrilla();
+        this.setVisible(true);
+    }
  }
     
 

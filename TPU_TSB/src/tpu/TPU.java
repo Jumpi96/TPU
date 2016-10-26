@@ -28,7 +28,9 @@ public class TPU {
         }
         
         GestorProcesamiento g = new GestorProcesamiento();
-        g.procesar("16082-8.txt");
+        //g.procesar("16082-8.txt");
+        InterfazGrafica i = new InterfazGrafica();
+        i.habilitarPantalla(g);
     }
     
     private static void baseDatos() throws SQLException{
