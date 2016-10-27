@@ -5,6 +5,26 @@
  */
 package tpu;
 
+import static com.sun.imageio.plugins.common.LZWStringTable.hash;
+import java.util.HashMap;
+import static java.util.Objects.hash;
+import java.util.Set;
+import java.util.Objects.*;
+import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import static java.util.Objects.hash;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 public class InterfazGrafica extends javax.swing.JFrame {
     
     private GestorProcesamiento g;
@@ -32,7 +52,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTablePalabras = new javax.swing.JTable();
         jProgressBar1 = new javax.swing.JProgressBar();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
@@ -42,7 +62,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTablePalabras.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -65,13 +85,13 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setColumnSelectionAllowed(true);
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
+        jTablePalabras.setColumnSelectionAllowed(true);
+        jScrollPane1.setViewportView(jTablePalabras);
+        jTablePalabras.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (jTablePalabras.getColumnModel().getColumnCount() > 0) {
+            jTablePalabras.getColumnModel().getColumn(0).setResizable(false);
+            jTablePalabras.getColumnModel().getColumn(1).setResizable(false);
+            jTablePalabras.getColumnModel().getColumn(2).setResizable(false);
         }
 
         jTextPane1.setText("Prograso de Carga");
@@ -174,7 +194,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPaneLista;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTablePalabras;
     private javax.swing.JTextPane jTextPane1;
     // End of variables declaration//GEN-END:variables
 
@@ -196,6 +216,23 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
     private void llenarGrilla() {     
         // tenes que llamar a g.getHashCompleto()
+        HashMap<String, int[]> hashCompleto = g.getHashCompleto();
+        Set<String> s = hashCompleto.keySet();
+        Iterator it = s.iterator();
+        
+        DefaultTableModel model= (DefaultTableModel) jTablePalabras.getModel();;
+        model.setRowCount(0);
+            
+       
+        Object palabra = null;
+        while(it.hasNext()){
+            palabra = it.next();
+            int[] v = hashCompleto.get(palabra);            
+            model.addRow(new Object[]{palabra,v[0],v[1]});
+        
+        }
+            
+        
         
         /*
         La forma más facil de recorrer un Hash
@@ -203,35 +240,40 @@ public class InterfazGrafica extends javax.swing.JFrame {
         Iterator it = s.iterator();
         2-palabra=it.next() (hasta que termine)
         hash.get(palabra) (devuelve un arreglo de dos dimensiones que tiene
-            en [0] la cantidad de repeticiones y en [1] la cantidad de archivos
-            en los que aparecio)
-        */
-        
+        en [0] la cantidad de repeticiones y en [1] la cantidad de archivos
+        en los que aparecio)
+         */
         /*
         Ya defini yo las columnas con el editor grafico. Solo queda:
         Forma en que yo definia tamaños y cargaba una grilla en DSI:
-        
-            DefaultTableModel model= (DefaultTableModel) jTableTI.getModel();;
-            model.setRowCount(0);
-            jTableTI.getColumnModel().getColumn(0).setPreferredWidth(150);
-            jTableTI.getColumnModel().getColumn(1).setPreferredWidth(26);
-            jTableTI.getColumnModel().getColumn(2).setPreferredWidth(150);
+        DefaultTableModel model= (DefaultTableModel) jTableTI.getModel();;
+        model.setRowCount(0);
+        jTablePalabras.getColumnModel().getColumn(0).setPreferredWidth(150);
+            jTablePalabras.getColumnModel().getColumn(1).setPreferredWidth(26);
+            jTablePalabras.getColumnModel().getColumn(2).setPreferredWidth(150);
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment( JLabel.CENTER );
-            jTableTI.getColumnModel().getColumn(1).setCellRenderer( centerRenderer );
-
-
+            jTablePalabras.getColumnModel().getColumn(1).setCellRenderer( centerRenderer );
             for (int i = 0; i < v.length; i++) {
-                model.addRow(new Object[]{v[i][0],v[i][1],v[i][2]});
-            }
-        */
+        model.addRow(new Object[]{v[i][0],v[i][1],v[i][2]});
+        }
+         */
      }
-
+    
+    private void llenarLista() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+    }
+    
     void habilitarPantalla(GestorProcesamiento g) {
         this.g=g;
         llenarGrilla();
+        this.llenarLista();
         this.setVisible(true);
+        this.llenarLista();
     }
+
+   
  }
     
 
