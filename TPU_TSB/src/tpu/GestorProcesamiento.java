@@ -124,7 +124,7 @@ public class GestorProcesamiento {
             Logger.getLogger(GestorProcesamiento.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return new HashMap();
+        return hash;
     }
     
     private HashMap<String,Integer> contarPalabras(String origen){

@@ -17,14 +17,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import static java.util.Objects.hash;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultRowSorter;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 public class InterfazGrafica extends javax.swing.JFrame {
     
     private GestorProcesamiento g;
@@ -62,6 +69,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jTablePalabras.setAutoCreateRowSorter(true);
         jTablePalabras.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -86,6 +94,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
             }
         });
         jTablePalabras.setColumnSelectionAllowed(true);
+        jTablePalabras.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTablePalabras);
         jTablePalabras.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (jTablePalabras.getColumnModel().getColumnCount() > 0) {
@@ -224,14 +233,18 @@ public class InterfazGrafica extends javax.swing.JFrame {
         model.setRowCount(0);
             
        
-        Object palabra = null;
+        String palabra = null;
         while(it.hasNext()){
-            palabra = it.next();
+            palabra = (String)it.next();
             int[] v = hashCompleto.get(palabra);            
             model.addRow(new Object[]{palabra,v[0],v[1]});
-        
         }
-            
+        
+        DefaultRowSorter sorter = ((DefaultRowSorter) jTablePalabras.getRowSorter());
+        List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+        sortKeys.add(new RowSorter.SortKey(1, SortOrder.DESCENDING));
+        sorter.setSortKeys(sortKeys);
+        
         
         
         /*
@@ -268,9 +281,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
     void habilitarPantalla(GestorProcesamiento g) {
         this.g=g;
         llenarGrilla();
-        this.llenarLista();
         this.setVisible(true);
-        this.llenarLista();
     }
 
    
