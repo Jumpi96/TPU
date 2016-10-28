@@ -16,6 +16,7 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 public class InterfazGrafica extends javax.swing.JFrame {
     
     private GestorProcesamiento g;
