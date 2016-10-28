@@ -5,42 +5,21 @@
  */
 package tpu;
 
-import static com.sun.imageio.plugins.common.LZWStringTable.hash;
-import java.util.HashMap;
-import static java.util.Objects.hash;
-import java.util.Set;
-import java.util.Objects.*;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import static java.util.Objects.hash;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultRowSorter;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 public class InterfazGrafica extends javax.swing.JFrame {
     
     private GestorProcesamiento g;
-    
-    //private JList lista; No termino de entender que son pero evita declarar
-    //atributos por aca en una interfaz. Solo dejaria el gestor yo
-    //private DefaultListModel modeloLista=new DefaultListModel();
-    //JScrollPane scrollpaneLista; No tenes que declarar algo que ya esta
-    //declarado en la interfaz
+
     
     
     public InterfazGrafica() {
@@ -66,6 +45,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jScrollPaneLista = new javax.swing.JScrollPane();
         jListArchivos = new javax.swing.JList<>();
+        jTxtFiltro = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -115,14 +96,21 @@ public class InterfazGrafica extends javax.swing.JFrame {
         });
         jScrollPaneLista.setViewportView(jListArchivos);
 
+        jLabel1.setText("Buscar");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE)
+                .addGap(41, 41, 41)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTxtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,15 +126,20 @@ public class InterfazGrafica extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPaneLista, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
-                        .addComponent(jButton1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTxtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(27, Short.MAX_VALUE))
@@ -198,6 +191,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JList<String> jListArchivos;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -205,83 +199,66 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPaneLista;
     private javax.swing.JTable jTablePalabras;
     private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTextField jTxtFiltro;
     // End of variables declaration//GEN-END:variables
 
-    public void cargarTablaPalabras(){
-        
-    }
-//    public void cargarListaArchivosProcesados(){
-//       try {
-//        ResultSet rs = conn.consutaLista();//La consulta tiene que devolver un ResultSet para tratar los datos
-//        while(rs.next())
-//            modeloLista.addElement(rs.getString("nombre"));//nombre es el campo de la base de datos
-//        lista.setModel(modeloLista);
-//
-//        } catch (SQLException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
 
-    private void llenarGrilla() {     
-        // tenes que llamar a g.getHashCompleto()
+    private void llenarGrilla(String filtro) {     
         HashMap<String, int[]> hashCompleto = g.getHashCompleto();
         Set<String> s = hashCompleto.keySet();
         Iterator it = s.iterator();
         
         DefaultTableModel model= (DefaultTableModel) jTablePalabras.getModel();;
         model.setRowCount(0);
-            
-       
-        String palabra = null;
-        while(it.hasNext()){
-            palabra = (String)it.next();
-            int[] v = hashCompleto.get(palabra);            
-            model.addRow(new Object[]{palabra,v[0],v[1]});
-        }
         
+        
+        
+        String palabra;
+        if (filtro.equals("")) {
+            while(it.hasNext()){
+                palabra = (String)it.next();
+                int[] v = hashCompleto.get(palabra);            
+                model.addRow(new Object[]{palabra,v[0],v[1]});
+            }
+        }
+        else
+        {
+            filtro=filtro.toLowerCase();
+            while(it.hasNext()){
+                palabra = (String)it.next();
+                if (palabra.toLowerCase().startsWith(filtro)) {
+                    int[] v = hashCompleto.get(palabra);            
+                    model.addRow(new Object[]{palabra,v[0],v[1]});
+                }
+            }
+        }
+            
         DefaultRowSorter sorter = ((DefaultRowSorter) jTablePalabras.getRowSorter());
         List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
         sortKeys.add(new RowSorter.SortKey(1, SortOrder.DESCENDING));
         sorter.setSortKeys(sortKeys);
         
-        
-        
-        /*
-        La forma más facil de recorrer un Hash
-        1-Set<String> s=hash.keySet(); (crea un set con todas las palabras)
-        Iterator it = s.iterator();
-        2-palabra=it.next() (hasta que termine)
-        hash.get(palabra) (devuelve un arreglo de dos dimensiones que tiene
-        en [0] la cantidad de repeticiones y en [1] la cantidad de archivos
-        en los que aparecio)
-         */
-        /*
-        Ya defini yo las columnas con el editor grafico. Solo queda:
-        Forma en que yo definia tamaños y cargaba una grilla en DSI:
-        DefaultTableModel model= (DefaultTableModel) jTableTI.getModel();;
-        model.setRowCount(0);
-        jTablePalabras.getColumnModel().getColumn(0).setPreferredWidth(150);
-            jTablePalabras.getColumnModel().getColumn(1).setPreferredWidth(26);
-            jTablePalabras.getColumnModel().getColumn(2).setPreferredWidth(150);
-            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-            centerRenderer.setHorizontalAlignment( JLabel.CENTER );
-            jTablePalabras.getColumnModel().getColumn(1).setCellRenderer( centerRenderer );
-            for (int i = 0; i < v.length; i++) {
-        model.addRow(new Object[]{v[i][0],v[i][1],v[i][2]});
-        }
-         */
      }
     
     private void llenarLista() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        
     }
     
-    void habilitarPantalla(GestorProcesamiento g) {
+    public void habilitarPantalla(GestorProcesamiento g) {
         this.g=g;
-        llenarGrilla();
+        llenarGrilla("");
+        
+        this.jTxtFiltro.getDocument().addDocumentListener(new DocumentListener(){
+            public void changedUpdate(DocumentEvent e){actualizarGrilla();}
+            public void removeUpdate(DocumentEvent e){actualizarGrilla();}
+            public void insertUpdate(DocumentEvent e){actualizarGrilla();}
+          });
+        
         this.setVisible(true);
+    }
+    
+    private void actualizarGrilla(){
+        llenarGrilla(this.jTxtFiltro.getText());
     }
 
    
