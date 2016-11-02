@@ -17,9 +17,19 @@ import javax.swing.SortOrder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.HeadlessException;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JOptionPane;
+
+
+
 public class InterfazGrafica extends javax.swing.JFrame {
     
     private GestorProcesamiento g;
+     File archivos[];
 
     
     
@@ -40,14 +50,13 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTablePalabras = new javax.swing.JTable();
-        jProgressBar1 = new javax.swing.JProgressBar();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jButton1 = new javax.swing.JButton();
-        jScrollPaneLista = new javax.swing.JScrollPane();
-        jListArchivos = new javax.swing.JList<>();
         jTxtFiltro = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        btnSeleccionarArchivo = new javax.swing.JButton();
+        btnCargar = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jtbl_archivosSelec = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,69 +94,144 @@ public class InterfazGrafica extends javax.swing.JFrame {
             jTablePalabras.getColumnModel().getColumn(2).setResizable(false);
         }
 
-        jTextPane1.setText("Prograso de Carga");
-        jScrollPane2.setViewportView(jTextPane1);
-
-        jButton1.setText("Cargar");
-
-        jListArchivos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPaneLista.setViewportView(jListArchivos);
-
         jLabel1.setText("Buscar");
+
+        btnSeleccionarArchivo.setText("Seleccionar Archivo");
+        btnSeleccionarArchivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSeleccionarArchivoActionPerformed(evt);
+            }
+        });
+
+        btnCargar.setText("Cargar");
+        btnCargar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCargarActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Lista de archivos seleccionados:");
+
+        jtbl_archivosSelec.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Nombre Archivo", "Ruta", "Tamaño", "Carga Exitosa"
+            }
+        ));
+        jScrollPane3.setViewportView(jtbl_archivosSelec);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(41, 41, 41)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTxtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 569, Short.MAX_VALUE)
+                        .addGap(259, 259, 259))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jProgressBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jButton1))
-                        .addGap(70, 70, 70))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPaneLista, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(80, 80, 80))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnSeleccionarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(142, 142, 142)
+                                .addComponent(btnCargar))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(80, 451, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTxtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(59, 59, 59)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSeleccionarArchivo)
+                    .addComponent(btnCargar))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPaneLista, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTxtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTxtFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSeleccionarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarArchivoActionPerformed
+        JFileChooser dialogo = new JFileChooser();
+        dialogo.setDialogTitle("Abrir");
+        dialogo.setMultiSelectionEnabled(true);
+
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos txt","txt");
+        dialogo.setFileFilter(filtro);
+        if(dialogo.showOpenDialog(null)==JFileChooser.APPROVE_OPTION)
+        {
+            archivos=dialogo.getSelectedFiles();
+            DefaultTableModel modelo = new DefaultTableModel();
+            String[] columnNames={"Nombre de archivo","Ruta","Tamaño","Estado"};
+            modelo.setColumnIdentifiers(columnNames);
+            Object[] fila = new Object[modelo.getColumnCount()];
+            for(File f:archivos){
+                fila[0] = f.getName();
+                fila[1] = f.getAbsolutePath();
+                fila[2] = f.length()+" bytes";
+                fila[3] = "Esperando";
+                modelo.addRow(fila);
+            }
+            jtbl_archivosSelec.setModel(modelo);
+
+        }
+    }//GEN-LAST:event_btnSeleccionarArchivoActionPerformed
+
+    private void btnCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarActionPerformed
+        // TODO add your handling code here:        
+        try {
+            DefaultTableModel modelo = new DefaultTableModel();
+            String[] columnNames={"Nombre de archivo","Ruta","Tamaño","Estado"};
+            modelo.setColumnIdentifiers(columnNames);
+            Object[] fila = new Object[modelo.getColumnCount()];
+
+            for(File f:archivos){                
+                fila[0] = f.getName();
+                fila[1] = f.getAbsolutePath();
+                fila[2] = f.length()+" bytes";                
+                if(!g.procesar(f.getAbsolutePath())){
+                    JOptionPane.showMessageDialog(this, "Ya ha cargado el archivo: "
+                        + f.getName()+"\n Intente con otro", "Archivo ya cargado", JOptionPane.INFORMATION_MESSAGE);
+                    fila[3]="Fallo, archivo cargado...";
+                }else{
+                    fila[3]="Exito...";
+                }
+                modelo.addRow(fila);
+            }
+            jtbl_archivosSelec.setModel(modelo);
+            this.llenarGrilla("");
+
+        }
+
+        catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar ");
+        }
+
+    }//GEN-LAST:event_btnCargarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -191,16 +275,15 @@ public class InterfazGrafica extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnCargar;
+    private javax.swing.JButton btnSeleccionarArchivo;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JList<String> jListArchivos;
-    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPaneLista;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTablePalabras;
-    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTextField jTxtFiltro;
+    private javax.swing.JTable jtbl_archivosSelec;
     // End of variables declaration//GEN-END:variables
 
 
